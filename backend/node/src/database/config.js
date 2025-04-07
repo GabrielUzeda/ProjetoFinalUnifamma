@@ -5,6 +5,7 @@ const pool = mysql.createPool({
     user: process.env.DB_USER || 'admin',
     password: process.env.DB_PASS || 'asdf1234',
     database: process.env.DB_NAME || 'tecnolar_db',
+    charset: 'utf8mb4',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0

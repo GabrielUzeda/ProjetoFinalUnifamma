@@ -7,10 +7,13 @@ services:
       MYSQL_DATABASE: tecnolar_db
       MYSQL_USER: admin
       MYSQL_PASSWORD: asdf1234
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
     ports:
       - "3306:3306"
     volumes:
       - ./bd/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   app:
     build:

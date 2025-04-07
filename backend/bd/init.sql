@@ -1,8 +1,15 @@
 -- init.sql
 
 -- Create database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS tecnolar_db;
+CREATE DATABASE IF NOT EXISTS tecnolar_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE tecnolar_db;
+
+-- Set default charset for the database
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+SET character_set_connection=utf8mb4;
+SET character_set_client=utf8mb4;
+SET character_set_results=utf8mb4;
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
