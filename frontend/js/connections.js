@@ -18,7 +18,13 @@ const Connections = {
             }
 
             const data = await response.json();
-            return { success: true, data };
+            
+            // Verificar se a resposta tem o formato esperado
+            if (data.erro === 0 && data.dados !== undefined) {
+                return { success: true, data: data.dados };
+            } else {
+                throw new Error(`Formato de resposta inválido: ${JSON.stringify(data)}`);
+            }
         } catch (error) {
             console.error(`Erro ao buscar dados de ${endpoint}:`, error);
             return { success: false, error: error.message };

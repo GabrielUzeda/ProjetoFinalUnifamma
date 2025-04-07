@@ -76,7 +76,9 @@ const Controller = {
             // Tentar carregar dados do Features
             const featuresResponse = await Connections.fetchFeatures();
             if (featuresResponse.success) {
-                window.features = { dados: featuresResponse.data };
+                // Garantir que os dados sejam um array limpo
+                const featuresData = Array.isArray(featuresResponse.data) ? featuresResponse.data : [];
+                window.features = { dados: featuresData };
                 console.log('Dados do Features carregados do banco:', window.features.dados);
             } else {
                 console.log('Usando dados estáticos do Features');
@@ -85,7 +87,9 @@ const Controller = {
             // Tentar carregar dados do Models
             const modelsResponse = await Connections.fetchModels();
             if (modelsResponse.success) {
-                window.models = { dados: modelsResponse.data };
+                // Garantir que os dados sejam um array limpo
+                const modelsData = Array.isArray(modelsResponse.data) ? modelsResponse.data : [];
+                window.models = { dados: modelsData };
                 console.log('Dados do Models carregados do banco:', window.models.dados);
             } else {
                 console.log('Usando dados estáticos do Models');
@@ -94,7 +98,9 @@ const Controller = {
             // Tentar carregar dados do Testimonials
             const testimonialsResponse = await Connections.fetchTestimonials();
             if (testimonialsResponse.success) {
-                window.testimonials = { dados: testimonialsResponse.data };
+                // Garantir que os dados sejam um array limpo
+                const testimonialsData = Array.isArray(testimonialsResponse.data) ? testimonialsResponse.data : [];
+                window.testimonials = { dados: testimonialsData };
                 console.log('Dados do Testimonials carregados do banco:', window.testimonials.dados);
             } else {
                 console.log('Usando dados estáticos do Testimonials');

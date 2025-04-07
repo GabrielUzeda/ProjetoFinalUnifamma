@@ -29,15 +29,33 @@ router.get('/about', async (req, res) => {
         const [paragraphs] = await pool.query('SELECT * FROM about_paragraphs ORDER BY paragraph_order');
         
         if (!about[0]) {
-            return res.status(404).json({ message: 'Sobre não encontrado' });
+            return res.status(404).json({ 
+                erro: 1,
+                dados: null,
+                mensagem: 'Sobre não encontrado' 
+            });
         }
 
+        const paragrafos = paragraphs.map(p => p.paragraph_text);
+
         res.json({
-            ...about[0],
-            paragraphs: paragraphs
+            erro: 0,
+            dados: {
+                titulo: about[0].title,
+                paragrafos: paragrafos,
+                imagem: {
+                    url: about[0].image_url,
+                    alt: about[0].image_alt
+                }
+            },
+            mensagem: 'Dados sobre a empresa carregados com sucesso'
         });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar informações sobre', error: error.message });
+        res.status(500).json({ 
+            erro: 1,
+            dados: null,
+            mensagem: 'Erro ao buscar informações sobre: ' + error.message 
+        });
     }
 });
 
@@ -66,9 +84,26 @@ router.put('/about', async (req, res) => {
 router.get('/features', async (req, res) => {
     try {
         const [features] = await pool.query('SELECT * FROM features ORDER BY display_order');
-        res.json(features);
+        
+        const dados = features.map(feature => ({
+            icone: feature.icon,
+            titulo: feature.title,
+            descricao: feature.description
+        }));
+
+        const response = {
+            erro: 0,
+            dados: JSON.parse(JSON.stringify(dados)),
+            mensagem: 'Vantagens carregadas com sucesso'
+        };
+
+        res.json(response);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar features', error: error.message });
+        res.status(500).json({ 
+            erro: 1,
+            dados: null,
+            mensagem: 'Erro ao buscar features: ' + error.message 
+        });
     }
 });
 
@@ -79,13 +114,21 @@ router.put('/features', async (req, res) => {
         for (const feature of features) {
             await pool.query(
                 'UPDATE features SET icon = ?, title = ?, description = ? WHERE display_order = ?',
-                [feature.icon, feature.title, feature.description, feature.display_order]
+                [feature.icone, feature.titulo, feature.descricao, feature.display_order]
             );
         }
 
-        res.json({ message: 'Features atualizadas com sucesso' });
+        res.json({ 
+            erro: 0,
+            dados: null,
+            mensagem: 'Features atualizadas com sucesso' 
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao atualizar features', error: error.message });
+        res.status(500).json({ 
+            erro: 1,
+            dados: null,
+            mensagem: 'Erro ao atualizar features: ' + error.message 
+        });
     }
 });
 
@@ -95,14 +138,29 @@ router.get('/models', async (req, res) => {
         const [models] = await pool.query('SELECT * FROM house_models');
         const [features] = await pool.query('SELECT * FROM house_model_features ORDER BY model_id, feature_order');
         
-        const modelsWithFeatures = models.map(model => ({
-            ...model,
-            features: features.filter(f => f.model_id === model.id)
+        const dados = models.map(model => ({
+            nome: model.name,
+            preco: model.price,
+            descricao: model.description,
+            caracteristicas: features
+                .filter(f => f.model_id === model.id)
+                .map(f => f.feature_text),
+            destaque: model.is_featured
         }));
 
-        res.json(modelsWithFeatures);
+        const response = {
+            erro: 0,
+            dados: JSON.parse(JSON.stringify(dados)),
+            mensagem: 'Modelos carregados com sucesso'
+        };
+
+        res.json(response);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar modelos', error: error.message });
+        res.status(500).json({ 
+            erro: 1,
+            dados: null,
+            mensagem: 'Erro ao buscar modelos: ' + error.message 
+        });
     }
 });
 
@@ -113,21 +171,29 @@ router.put('/models', async (req, res) => {
         for (const model of models) {
             await pool.query(
                 'UPDATE house_models SET name = ?, price = ?, description = ?, is_featured = ? WHERE id = ?',
-                [model.name, model.price, model.description, model.is_featured, model.id]
+                [model.nome, model.preco, model.descricao, model.destaque, model.id]
             );
 
             // Atualizar features do modelo
-            for (const feature of model.features) {
+            for (const feature of model.caracteristicas) {
                 await pool.query(
                     'UPDATE house_model_features SET feature_text = ? WHERE model_id = ? AND feature_order = ?',
-                    [feature.feature_text, model.id, feature.feature_order]
+                    [feature, model.id, model.caracteristicas.indexOf(feature) + 1]
                 );
             }
         }
 
-        res.json({ message: 'Modelos atualizados com sucesso' });
+        res.json({ 
+            erro: 0,
+            dados: null,
+            mensagem: 'Modelos atualizados com sucesso' 
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao atualizar modelos', error: error.message });
+        res.status(500).json({ 
+            erro: 1,
+            dados: null,
+            mensagem: 'Erro ao atualizar modelos: ' + error.message 
+        });
     }
 });
 
@@ -135,9 +201,30 @@ router.put('/models', async (req, res) => {
 router.get('/testimonials', async (req, res) => {
     try {
         const [testimonials] = await pool.query('SELECT * FROM testimonials ORDER BY display_order');
-        res.json(testimonials);
+        
+        const dados = testimonials.map(testimonial => ({
+            depoimento: testimonial.testimonial_text,
+            cliente: {
+                foto: testimonial.client_photo_url,
+                nome: testimonial.client_name,
+                cidade: testimonial.client_location
+            }
+        }));
+
+        // Garantir que os dados sejam retornados como um array limpo
+        const response = {
+            erro: 0,
+            dados: JSON.parse(JSON.stringify(dados)), // Isso remove os índices numéricos
+            mensagem: 'Depoimentos carregados com sucesso'
+        };
+
+        res.json(response);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar depoimentos', error: error.message });
+        res.status(500).json({ 
+            erro: 1,
+            dados: null,
+            mensagem: 'Erro ao buscar depoimentos: ' + error.message 
+        });
     }
 });
 
@@ -148,13 +235,27 @@ router.put('/testimonials', async (req, res) => {
         for (const testimonial of testimonials) {
             await pool.query(
                 'UPDATE testimonials SET testimonial_text = ?, client_name = ?, client_location = ?, client_photo_url = ? WHERE display_order = ?',
-                [testimonial.testimonial_text, testimonial.client_name, testimonial.client_location, testimonial.client_photo_url, testimonial.display_order]
+                [
+                    testimonial.depoimento,
+                    testimonial.cliente.nome,
+                    testimonial.cliente.cidade,
+                    testimonial.cliente.foto,
+                    testimonial.display_order
+                ]
             );
         }
 
-        res.json({ message: 'Depoimentos atualizados com sucesso' });
+        res.json({ 
+            erro: 0,
+            dados: null,
+            mensagem: 'Depoimentos atualizados com sucesso' 
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao atualizar depoimentos', error: error.message });
+        res.status(500).json({ 
+            erro: 1,
+            dados: null,
+            mensagem: 'Erro ao atualizar depoimentos: ' + error.message 
+        });
     }
 });
 
