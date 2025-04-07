@@ -26,6 +26,20 @@ const Controller = {
 
             try {
                 const formData = new FormData(this);
+                
+                // Mostrar loading
+                Swal.fire({
+                    title: 'Enviando...',
+                    text: 'Por favor, aguarde enquanto processamos sua solicitação.',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 const response = await fetch('http://localhost:3000/api/contact', {
                     method: 'POST',
                     headers: {
@@ -36,15 +50,37 @@ const Controller = {
 
                 const data = await response.json();
 
+                // Fechar loading
+                Swal.close();
+
                 if (data.erro === 0) {
-                    alert(data.mensagem);
-                    this.reset();
+                    Swal.fire({
+                        title: 'Sucesso!',
+                        text: data.mensagem,
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#3085d6'
+                    }).then(() => {
+                        this.reset();
+                    });
                 } else {
-                    alert(data.mensagem || 'Erro ao enviar mensagem. Por favor, tente novamente.');
+                    Swal.fire({
+                        title: 'Erro!',
+                        text: data.mensagem || 'Erro ao enviar mensagem. Por favor, tente novamente.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#d33'
+                    });
                 }
             } catch (error) {
                 console.error('Erro ao enviar formulário:', error);
-                alert('Erro ao enviar mensagem. Por favor, tente novamente.');
+                Swal.fire({
+                    title: 'Erro!',
+                    text: 'Erro ao enviar mensagem. Por favor, tente novamente.',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#d33'
+                });
             }
         });
 
@@ -81,6 +117,19 @@ const Controller = {
 
     async loadDataFromBackend() {
         try {
+            // Mostrar loading
+            Swal.fire({
+                title: 'Carregando...',
+                text: 'Por favor, aguarde enquanto carregamos os dados.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             // Tentar carregar dados do About
             const aboutResponse = await Connections.fetchAbout();
             if (aboutResponse.success) {
@@ -93,9 +142,7 @@ const Controller = {
             // Tentar carregar dados do Features
             const featuresResponse = await Connections.fetchFeatures();
             if (featuresResponse.success) {
-                // Garantir que os dados sejam um array limpo
-                const featuresData = Array.isArray(featuresResponse.data) ? featuresResponse.data : [];
-                window.features = { dados: featuresData };
+                window.features = { dados: featuresResponse.data };
                 console.log('Dados do Features carregados do banco:', window.features.dados);
             } else {
                 console.log('Usando dados estáticos do Features');
@@ -104,9 +151,7 @@ const Controller = {
             // Tentar carregar dados do Models
             const modelsResponse = await Connections.fetchModels();
             if (modelsResponse.success) {
-                // Garantir que os dados sejam um array limpo
-                const modelsData = Array.isArray(modelsResponse.data) ? modelsResponse.data : [];
-                window.models = { dados: modelsData };
+                window.models = { dados: modelsResponse.data };
                 console.log('Dados do Models carregados do banco:', window.models.dados);
             } else {
                 console.log('Usando dados estáticos do Models');
@@ -115,15 +160,23 @@ const Controller = {
             // Tentar carregar dados do Testimonials
             const testimonialsResponse = await Connections.fetchTestimonials();
             if (testimonialsResponse.success) {
-                // Garantir que os dados sejam um array limpo
-                const testimonialsData = Array.isArray(testimonialsResponse.data) ? testimonialsResponse.data : [];
-                window.testimonials = { dados: testimonialsData };
+                window.testimonials = { dados: testimonialsResponse.data };
                 console.log('Dados do Testimonials carregados do banco:', window.testimonials.dados);
             } else {
                 console.log('Usando dados estáticos do Testimonials');
             }
+
+            // Fechar loading
+            Swal.close();
         } catch (error) {
             console.error('Erro ao carregar dados do backend:', error);
+            Swal.fire({
+                title: 'Erro!',
+                text: 'Erro ao carregar dados do site. Por favor, recarregue a página.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#d33'
+            });
         }
     },
 
