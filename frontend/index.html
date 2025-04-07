@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TecnoLar Construções - Casas Pré-moldadas</title>
+    <link rel="stylesheet" href="./css/index.css">
+
+</head>
+
+<body>
+
+    <!-- Libs-->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="./js/lib/mustache.min.js"></script>
+
+    <!-- Templates -->
+    <script type="text/template" id="features-template">
+        <div class="features-grid">
+            {{#dados}}
+            <div class="feature-card">
+                <div class="feature-icon">{{icone}}</div>
+                <h3>{{titulo}}</h3>
+                <p>{{descricao}}</p>
+            </div>
+            {{/dados}}
+        </div>
+    </script>
+    <script type="text/template" id="about-template">
+        <div class="about-content">
+            <div class="about-text">
+                {{#dados.paragrafos}}
+                <p>{{.}}</p>
+                {{/dados.paragrafos}}
+            </div>
+            <div class="about-image">
+                <img src="{{dados.imagem.url}}" alt="{{dados.imagem.alt}}">
+            </div>
+        </div>
+    </script>
+    <script type="text/template" id="testimonials-template">
+        <div class="testimonial-grid">
+            {{#dados}}
+            <div class="testimonial-card">
+                <p>"{{depoimento}}"</p>
+                <div class="client-info">
+                    <img src="{{cliente.foto}}" alt="{{cliente.nome}}">
+                    <div>
+                        <div class="client-name">{{cliente.nome}}</div>
+                        <div class="client-position">{{cliente.cidade}}</div>
+                    </div>
+                </div>
+            </div>
+            {{/dados}}
+        </div>
+    </script>
+    <script type="text/template" id="models-template">
+        <div class="pricing-grid">
+            {{#dados}}
+            <div class="pricing-card {{#destaque}}featured{{/destaque}}">
+                <h3>{{nome}}</h3>
+                <div class="price">R$ {{preco}}<span>/total</span></div>
+                <p>{{descricao}}</p>
+                <ul class="plan-features">
+                    {{#caracteristicas}}
+                    <li>{{.}}</li>
+                    {{/caracteristicas}}
+                </ul>
+                <a href="#contact" class="btn">Solicitar Orçamento</a>
+            </div>
+            {{/dados}}
+        </div>
+    </script>
+
+
+    
+    <!-- Static Data-->
+    <script src="./data/about.js"></script>
+    <script src="./data/features.js"></script>
+    <script src="./data/models.js"></script>
+    <script src="./data/testimonials.js"></script>
+
+    <!-- Controller-->
+    <script src="./js/controller.js"></script>
+
+
+    <!-- Cabeçalho -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <div class="logo-cube">
+                        <div class="cube-face front"></div>
+                        <div class="cube-face back"></div>
+                        <div class="cube-face right"></div>
+                        <div class="cube-face left"></div>
+                        <div class="cube-face top"></div>
+                        <div class="cube-face bottom"></div>
+                    </div>
+                    TecnoLar Construções
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#features">Vantagens</a></li>
+                    <li><a href="#about">Sobre Nós</a></li>
+                    <li><a href="#testimonials">Depoimentos</a></li>
+                    <li><a href="#pricing">Modelos</a></li>
+                    <li><a href="#contact">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Construa Sua Casa em Tempo Recorde</h1>
+            <p>Casas pré-moldadas de alto padrão, construídas em até 60% menos tempo que as convencionais. Economize,
+                agilize e tenha qualidade garantida com a TecnoLar Construções.</p>
+            <a href="#contact" class="btn">Solicite um Orçamento</a>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">Vantagens das Casas Pré-moldadas</h2>
+            <div id="features-content"></div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">Sobre a TecnoLar Construções</h2>
+            <div id="about-content"></div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <h2 class="section-title">O Que Nossos Clientes Dizem</h2>
+            <div id="testimonials-content"></div>
+        </div>
+    </section>
+
+    <!-- Modelos de Casas -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 class="section-title">Nossos Modelos</h2>
+            <div id="models-content"></div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Solicite um Orçamento</h2>
+            <div class="contact-form">
+                <div class="form-group">
+                    <label for="name">Nome</label>
+                    <input type="text" id="name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Telefone</label>
+                    <input type="tel" id="phone" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="modelo">Modelo de Interesse</label>
+                    <select id="modelo" class="form-control">
+                        <option value="">Selecione um modelo</option>
+                        <option value="compact">Compact</option>
+                        <option value="comfort">Comfort</option>
+                        <option value="premium">Premium</option>
+                        <option value="personalizado">Projeto Personalizado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="message">Mensagem</label>
+                    <textarea id="message" class="form-control" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn">Enviar Solicitação</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h3>TecnoLar Construções</h3>
+                    <p>Transformando sonhos em realidade com tecnologia, qualidade e rapidez. Sua casa pré-moldada com a
+                        segurança que você merece.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Links Rápidos</h3>
+                    <ul class="footer-links">
+                        <li><a href="#features">Vantagens</a></li>
+                        <li><a href="#about">Sobre Nós</a></li>
+                        <li><a href="#testimonials">Depoimentos</a></li>
+                        <li><a href="#pricing">Modelos</a></li>
+                        <li><a href="#contact">Contato</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contato</h3>
+                    <ul class="footer-links">
+                        <li>contato@tecnolar.com.br</li>
+                        <li>(11) 4567-8900</li>
+                        <li>Av. Industrial, 1500 - São Paulo/SP</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Redes Sociais</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">YouTube</a></li>
+                        <li><a href="#">Pinterest</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 TecnoLar Construções. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+
+</body>
+
+</html>
