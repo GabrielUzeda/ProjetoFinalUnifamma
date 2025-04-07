@@ -140,7 +140,12 @@ router.get('/models', async (req, res) => {
         
         const dados = models.map(model => ({
             nome: model.name,
-            preco: model.price,
+            preco: Number(model.price).toLocaleString('pt-BR', { 
+                style: 'currency', 
+                currency: 'BRL',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }),
             descricao: model.description,
             caracteristicas: features
                 .filter(f => f.model_id === model.id)
