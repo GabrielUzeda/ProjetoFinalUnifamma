@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - TecnoLar Construções</title>
+    <link rel="stylesheet" href="./css/admin.css">
+    <!-- Libs-->
+    <script src="./js/lib/jquery-3.7.1.min.js"></script>
+    <script src="./js/lib/jquery.mask.min.js"></script>
+    <script src="./js/lib/sweetalert.min.js"></script>
+    <script src="./js/lib/mustache.min.js"></script>
+</head>
+
+<body>
+    <!-- Cabeçalho -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <div class="logo-cube">
+                        <div class="cube-face front"></div>
+                        <div class="cube-face back"></div>
+                        <div class="cube-face right"></div>
+                        <div class="cube-face left"></div>
+                        <div class="cube-face top"></div>
+                        <div class="cube-face bottom"></div>
+                    </div>
+                    TecnoLar Admin
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#about">Sobre Nós</a></li>
+                    <li><a href="#features">Vantagens</a></li>
+                    <li><a href="#models">Modelos</a></li>
+                    <li><a href="#testimonials">Depoimentos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Seção Sobre Nós -->
+    <section id="about" class="admin-section">
+        <div class="container">
+            <h2 class="section-title">Editar Sobre Nós</h2>
+            <form id="about-form" class="admin-form">
+                <div class="form-group">
+                    <label for="about-title">Título</label>
+                    <input type="text" id="about-title" name="title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="about-image-url">URL da Imagem</label>
+                    <input type="url" id="about-image-url" name="image_url" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="about-image-alt">Texto Alternativo da Imagem</label>
+                    <input type="text" id="about-image-alt" name="image_alt" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Parágrafos</label>
+                    <div id="about-paragraphs">
+                        <div class="paragraph-group">
+                            <textarea class="form-control paragraph-text" required></textarea>
+                            <button type="button" class="btn btn-danger remove-paragraph">Remover</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" id="add-paragraph">Adicionar Parágrafo</button>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Seção Vantagens -->
+    <section id="features" class="admin-section">
+        <div class="container">
+            <h2 class="section-title">Editar Vantagens</h2>
+            <form id="features-form" class="admin-form">
+                <div id="features-list">
+                    <div class="feature-group">
+                        <div class="form-group">
+                            <label>Ícone</label>
+                            <input type="text" class="form-control feature-icon" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Título</label>
+                            <input type="text" class="form-control feature-title" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição</label>
+                            <textarea class="form-control feature-description" required></textarea>
+                        </div>
+                        <button type="button" class="btn btn-danger remove-feature">Remover</button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary" id="add-feature">Adicionar Vantagem</button>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Seção Modelos -->
+    <section id="models" class="admin-section">
+        <div class="container">
+            <h2 class="section-title">Editar Modelos</h2>
+            <form id="models-form" class="admin-form">
+                <div id="models-list">
+                    <div class="model-group">
+                        <div class="form-group">
+                            <label>Nome</label>
+                            <input type="text" class="form-control model-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Preço</label>
+                            <input type="text" class="form-control model-price" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição</label>
+                            <textarea class="form-control model-description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Características</label>
+                            <div class="features-list">
+                                <div class="feature-item">
+                                    <input type="text" class="form-control model-feature" required>
+                                    <button type="button" class="btn btn-danger remove-feature">Remover</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary add-model-feature">Adicionar Característica</button>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" class="model-featured"> Modelo em Destaque
+                            </label>
+                        </div>
+                        <button type="button" class="btn btn-danger remove-model">Remover Modelo</button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary" id="add-model">Adicionar Modelo</button>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Seção Depoimentos -->
+    <section id="testimonials" class="admin-section">
+        <div class="container">
+            <h2 class="section-title">Editar Depoimentos</h2>
+            <form id="testimonials-form" class="admin-form">
+                <div id="testimonials-list">
+                    <div class="testimonial-group">
+                        <div class="form-group">
+                            <label>Depoimento</label>
+                            <textarea class="form-control testimonial-text" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Nome do Cliente</label>
+                            <input type="text" class="form-control client-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Cidade</label>
+                            <input type="text" class="form-control client-city" required>
+                        </div>
+                        <div class="form-group">
+                            <label>URL da Foto</label>
+                            <input type="url" class="form-control client-photo" required>
+                        </div>
+                        <button type="button" class="btn btn-danger remove-testimonial">Remover</button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary" id="add-testimonial">Adicionar Depoimento</button>
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="./js/admin.js"></script>
+</body>
+
+</html> 
