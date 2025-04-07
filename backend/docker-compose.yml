@@ -4,15 +4,18 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: mydatabase
+      MYSQL_DATABASE: tecnolar_db
       MYSQL_USER: admin
       MYSQL_PASSWORD: asdf1234
     ports:
       - "3306:3306"
+    volumes:
+      - ./bd/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   app:
-    build: .
-    restart: always
+    build:
+      context: node
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     depends_on:
@@ -21,4 +24,6 @@ services:
       DB_HOST: db
       DB_USER: admin
       DB_PASS: asdf1234
-      DB_NAME: mydatabase
+      DB_NAME: tecnolar_db
+      NODE_ENV: development
+    command: sh -c "npm install && npm start"
