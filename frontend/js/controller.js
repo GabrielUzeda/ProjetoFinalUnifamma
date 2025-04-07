@@ -4,7 +4,10 @@ $(document).ready(function() {
 });
 
 const Controller = {
-    start() {
+    async start() {
+        // Tentar carregar dados do backend
+        await this.loadDataFromBackend();
+        
         // Renderizar os templates com Mustache
         this.renderTemplates();
      
@@ -57,6 +60,48 @@ const Controller = {
             navLinks.removeClass('active');
             navLinks.filter('[href="#' + current + '"]').addClass('active');
         });
+    },
+
+    async loadDataFromBackend() {
+        try {
+            // Tentar carregar dados do About
+            const aboutResponse = await Connections.fetchAbout();
+            if (aboutResponse.success) {
+                window.about = { dados: aboutResponse.data };
+                console.log('Dados do About carregados do banco:', window.about.dados);
+            } else {
+                console.log('Usando dados estáticos do About');
+            }
+
+            // Tentar carregar dados do Features
+            const featuresResponse = await Connections.fetchFeatures();
+            if (featuresResponse.success) {
+                window.features = { dados: featuresResponse.data };
+                console.log('Dados do Features carregados do banco:', window.features.dados);
+            } else {
+                console.log('Usando dados estáticos do Features');
+            }
+
+            // Tentar carregar dados do Models
+            const modelsResponse = await Connections.fetchModels();
+            if (modelsResponse.success) {
+                window.models = { dados: modelsResponse.data };
+                console.log('Dados do Models carregados do banco:', window.models.dados);
+            } else {
+                console.log('Usando dados estáticos do Models');
+            }
+
+            // Tentar carregar dados do Testimonials
+            const testimonialsResponse = await Connections.fetchTestimonials();
+            if (testimonialsResponse.success) {
+                window.testimonials = { dados: testimonialsResponse.data };
+                console.log('Dados do Testimonials carregados do banco:', window.testimonials.dados);
+            } else {
+                console.log('Usando dados estáticos do Testimonials');
+            }
+        } catch (error) {
+            console.error('Erro ao carregar dados do backend:', error);
+        }
     },
 
     renderTemplates() {
