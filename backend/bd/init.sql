@@ -89,6 +89,19 @@ CREATE TABLE IF NOT EXISTS testimonials (
     UNIQUE KEY unique_testimonial_order (display_order)
 );
 
+-- Contact form submissions table
+CREATE TABLE IF NOT EXISTS contact_submissions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    modelo VARCHAR(50) NOT NULL,
+    message TEXT,
+    status ENUM('pending', 'read', 'replied') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- Insert demo user (password: Admin@123)
 INSERT INTO users (username, password, email, full_name, role)
 VALUES ('admin', '$2y$10$uG5mh3hKvVg9B.A3d9QYb.ZV6bY5O2w5q1AQ2AGRjkVwJjIRXMhJi', 'admin@tecnolar.com', 'Administrador Sistema', 'admin');

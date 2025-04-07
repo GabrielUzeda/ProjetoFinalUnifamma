@@ -259,4 +259,46 @@ router.put('/testimonials', async (req, res) => {
     }
 });
 
+// Rota para o formulário de contato
+router.post('/contact', async (req, res) => {
+    try {
+        const { name, email, phone, modelo, message } = req.body;
+
+        // Validação dos campos obrigatórios
+        if (!name || !email || !phone || !modelo) {
+            return res.status(400).json({
+                erro: 1,
+                dados: null,
+                mensagem: 'Os campos nome, e-mail, telefone e modelo são obrigatórios'
+            });
+        }
+
+        // Inserir no banco de dados
+        const [result] = await pool.query(
+            'INSERT INTO contact_submissions (name, email, phone, modelo, message) VALUES (?, ?, ?, ?, ?)',
+            [name, email, phone, modelo, message || null]
+        );
+
+        res.json({
+            erro: 0,
+            dados: {
+                id: result.insertId,
+                name,
+                email,
+                phone,
+                modelo,
+                message: message || ''
+            },
+            mensagem: 'Mensagem enviada com sucesso! Entraremos em contato em breve.'
+        });
+    } catch (error) {
+        console.error('Erro ao processar formulário de contato:', error);
+        res.status(500).json({
+            erro: 1,
+            dados: null,
+            mensagem: 'Erro ao processar sua mensagem. Por favor, tente novamente mais tarde.'
+        });
+    }
+});
+
 module.exports = router;

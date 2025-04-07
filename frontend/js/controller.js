@@ -10,25 +10,42 @@ const Controller = {
         
         // Renderizar os templates com Mustache
         this.renderTemplates();
+
+        // Inicializar máscara do telefone
+        $('#phone').mask('(00) 00000-0000');
      
         // Função para validar o formulário de contato
-        $('.contact-form').on('submit', function(e) {
+        $('.contact-form').on('submit', async function(e) {
             e.preventDefault();
 
-            // Validação básica dos campos
-            const name = $('#name').val();
-            const email = $('#email').val();
-            const phone = $('#phone').val();
-            const message = $('#message').val();
-
-            if (!name || !email || !phone || !message) {
-                alert('Por favor, preencha todos os campos obrigatórios.');
+            // Validação HTML5 já feita pelo navegador
+            if (!this.checkValidity()) {
+                this.reportValidity();
                 return;
             }
 
-            // Aqui você pode adicionar o código para enviar os dados para o backend
-            alert('Solicitação enviada com sucesso! Entraremos em contato em breve.');
-            $(this).trigger('reset');
+            try {
+                const formData = new FormData(this);
+                const response = await fetch('http://localhost:3000/api/contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(Object.fromEntries(formData))
+                });
+
+                const data = await response.json();
+
+                if (data.erro === 0) {
+                    alert(data.mensagem);
+                    this.reset();
+                } else {
+                    alert(data.mensagem || 'Erro ao enviar mensagem. Por favor, tente novamente.');
+                }
+            } catch (error) {
+                console.error('Erro ao enviar formulário:', error);
+                alert('Erro ao enviar mensagem. Por favor, tente novamente.');
+            }
         });
 
         // Suavizar a rolagem para os links de navegação
