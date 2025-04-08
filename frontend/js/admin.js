@@ -84,6 +84,11 @@ const Admin = {
             $(this).closest('.testimonial-group').remove();
         });
 
+        // Add specific handler for model feature removal
+        $(document).on('click', '.feature-item .remove-feature', function() {
+            $(this).closest('.feature-item').remove();
+        });
+
         $(document).on('click', '.add-model-feature', function() {
             const featuresList = $(this).closest('.form-group').find('.features-list');
             featuresList.append(`
@@ -487,4 +492,4 @@ const Admin = {
             });
         }
     }
-}; 
+};
