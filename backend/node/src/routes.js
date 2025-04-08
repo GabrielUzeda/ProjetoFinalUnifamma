@@ -62,21 +62,40 @@ router.get('/about', async (req, res) => {
 router.put('/about', async (req, res) => {
     try {
         const { title, image_url, image_alt, paragraphs } = req.body;
+        console.log('Recebendo dados do about:', { title, image_url, image_alt, paragraphs });
         
-        await pool.query('UPDATE about SET title = ?, image_url = ?, image_alt = ? WHERE id = 1', 
-            [title, image_url, image_alt]);
+        // Primeiro, limpar dados existentes
+        await pool.query('DELETE FROM about_paragraphs');
+        console.log('Parágrafos limpos');
         
-        // Atualizar parágrafos
-        for (const paragraph of paragraphs) {
+        // Inserir ou atualizar dados do about
+        const [result] = await pool.query(
+            'INSERT INTO about (id, title, image_url, image_alt) VALUES (1, ?, ?, ?) ON DUPLICATE KEY UPDATE title = ?, image_url = ?, image_alt = ?',
+            [title, image_url, image_alt, title, image_url, image_alt]
+        );
+        console.log('About principal inserido/atualizado');
+        
+        // Inserir parágrafos
+        for (const [index, paragraph] of paragraphs.entries()) {
             await pool.query(
-                'UPDATE about_paragraphs SET paragraph_text = ? WHERE about_id = 1 AND paragraph_order = ?',
-                [paragraph.paragraph_text, paragraph.paragraph_order]
+                'INSERT INTO about_paragraphs (about_id, paragraph_text, paragraph_order) VALUES (1, ?, ?)',
+                [paragraph, index + 1]
             );
         }
+        console.log('Parágrafos inseridos');
 
-        res.json({ message: 'Sobre atualizado com sucesso' });
+        res.json({ 
+            erro: 0,
+            dados: null,
+            mensagem: 'Sobre atualizado com sucesso' 
+        });
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao atualizar sobre', error: error.message });
+        console.error('Erro ao atualizar sobre:', error);
+        res.status(500).json({ 
+            erro: 1,
+            dados: null,
+            mensagem: 'Erro ao atualizar sobre: ' + error.message 
+        });
     }
 });
 
@@ -111,10 +130,14 @@ router.put('/features', async (req, res) => {
     try {
         const features = req.body;
         
-        for (const feature of features) {
+        // Limpar features existentes
+        await pool.query('DELETE FROM features');
+        
+        // Inserir novas features
+        for (const [index, feature] of features.entries()) {
             await pool.query(
-                'UPDATE features SET icon = ?, title = ?, description = ? WHERE display_order = ?',
-                [feature.icone, feature.titulo, feature.descricao, feature.display_order]
+                'INSERT INTO features (icon, title, description, display_order) VALUES (?, ?, ?, ?)',
+                [feature.icone, feature.titulo, feature.descricao, index + 1]
             );
         }
 
@@ -124,6 +147,7 @@ router.put('/features', async (req, res) => {
             mensagem: 'Features atualizadas com sucesso' 
         });
     } catch (error) {
+        console.error('Erro ao atualizar features:', error);
         res.status(500).json({ 
             erro: 1,
             dados: null,
@@ -172,20 +196,44 @@ router.get('/models', async (req, res) => {
 router.put('/models', async (req, res) => {
     try {
         const models = req.body;
+        console.log('Recebendo dados dos modelos:', models);
         
-        for (const model of models) {
+        // Primeiro, limpar todas as características existentes
+        await pool.query('DELETE FROM house_model_features');
+        console.log('Características limpas');
+        
+        // Atualizar cada modelo
+        for (const [index, model] of models.entries()) {
+            console.log('Processando modelo:', model);
+            
+            // Atualizar ou inserir o modelo
+            const price = model.preco.replace('R$ ', '').replace('.', '').replace(',', '.');
+            console.log('Preço convertido:', price);
+            
             await pool.query(
-                'UPDATE house_models SET name = ?, price = ?, description = ?, is_featured = ? WHERE id = ?',
-                [model.nome, model.preco, model.descricao, model.destaque, model.id]
+                'INSERT INTO house_models (id, name, price, description, is_featured) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE name = ?, price = ?, description = ?, is_featured = ?',
+                [
+                    index + 1,
+                    model.nome,
+                    price,
+                    model.descricao,
+                    model.destaque,
+                    model.nome,
+                    price,
+                    model.descricao,
+                    model.destaque
+                ]
             );
+            console.log('Modelo inserido/atualizado');
 
-            // Atualizar features do modelo
-            for (const feature of model.caracteristicas) {
+            // Inserir as características do modelo
+            for (const [featureIndex, feature] of model.caracteristicas.entries()) {
                 await pool.query(
-                    'UPDATE house_model_features SET feature_text = ? WHERE model_id = ? AND feature_order = ?',
-                    [feature, model.id, model.caracteristicas.indexOf(feature) + 1]
+                    'INSERT INTO house_model_features (model_id, feature_text, feature_order) VALUES (?, ?, ?)',
+                    [index + 1, feature, featureIndex + 1]
                 );
             }
+            console.log('Características inseridas');
         }
 
         res.json({ 
@@ -194,6 +242,7 @@ router.put('/models', async (req, res) => {
             mensagem: 'Modelos atualizados com sucesso' 
         });
     } catch (error) {
+        console.error('Erro ao atualizar modelos:', error);
         res.status(500).json({ 
             erro: 1,
             dados: null,
@@ -237,15 +286,19 @@ router.put('/testimonials', async (req, res) => {
     try {
         const testimonials = req.body;
         
-        for (const testimonial of testimonials) {
+        // Primeiro, limpar todos os depoimentos existentes
+        await pool.query('DELETE FROM testimonials');
+        
+        // Inserir os novos depoimentos
+        for (const [index, testimonial] of testimonials.entries()) {
             await pool.query(
-                'UPDATE testimonials SET testimonial_text = ?, client_name = ?, client_location = ?, client_photo_url = ? WHERE display_order = ?',
+                'INSERT INTO testimonials (testimonial_text, client_name, client_location, client_photo_url, display_order) VALUES (?, ?, ?, ?, ?)',
                 [
                     testimonial.depoimento,
                     testimonial.cliente.nome,
                     testimonial.cliente.cidade,
                     testimonial.cliente.foto,
-                    testimonial.display_order
+                    index + 1
                 ]
             );
         }
@@ -256,6 +309,7 @@ router.put('/testimonials', async (req, res) => {
             mensagem: 'Depoimentos atualizados com sucesso' 
         });
     } catch (error) {
+        console.error('Erro ao atualizar depoimentos:', error);
         res.status(500).json({ 
             erro: 1,
             dados: null,

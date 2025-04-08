@@ -412,17 +412,23 @@ const Admin = {
                 features.push($(this).val());
             });
 
-            models.push({
+            const modelData = {
                 nome: $(this).find('.model-name').val(),
                 preco: $(this).find('.model-price').val(),
                 descricao: $(this).find('.model-description').val(),
                 caracteristicas: features,
                 destaque: $(this).find('.model-featured').is(':checked')
-            });
+            };
+            
+            console.log('Dados do modelo:', modelData);
+            models.push(modelData);
         });
+
+        console.log('Dados a serem enviados:', models);
 
         try {
             const response = await this.sendData('/api/models', models);
+            console.log('Resposta do servidor:', response);
             if (response.erro === 0) {
                 Swal.fire({
                     title: 'Sucesso!',
@@ -446,18 +452,24 @@ const Admin = {
         
         const testimonials = [];
         $('.testimonial-group').each(function() {
-            testimonials.push({
+            const testimonialData = {
                 depoimento: $(this).find('.testimonial-text').val(),
                 cliente: {
                     nome: $(this).find('.client-name').val(),
                     cidade: $(this).find('.client-city').val(),
                     foto: $(this).find('.client-photo').val()
                 }
-            });
+            };
+            
+            console.log('Dados do depoimento:', testimonialData);
+            testimonials.push(testimonialData);
         });
+
+        console.log('Dados a serem enviados:', testimonials);
 
         try {
             const response = await this.sendData('/api/testimonials', testimonials);
+            console.log('Resposta do servidor:', response);
             if (response.erro === 0) {
                 Swal.fire({
                     title: 'Sucesso!',
